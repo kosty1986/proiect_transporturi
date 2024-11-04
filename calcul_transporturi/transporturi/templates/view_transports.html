@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--suppress XmlInvalidId -->
+<h1>Transporturi</h1>
+
+{% if user.is_authenticated %}
+    {% if user.user_type == 'Client' %}
+        <a href="{% url 'add_transport' %}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus"></i> Adaugă transport
+        </a>
+    {% endif %}
+    <a href="{% url 'export_data' %}?destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}" class="btn btn-secondary mb-3">
+        <i class="fas fa-file-export"></i> Exportă date
+    </a>
+
+    {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <!-- Formular de filtrare -->
+    <form method="GET" action="{% url 'view_transports' %}" class="form-inline mb-3">
+        <div class="form-group mx-2">
+            <label for="id_destination" class="filter-label">Destinatie:</label>
+            {{ form.destination }}
+        </div>
+        <div class="form-group mx-2">
+            <label for="id_status" class="filter-label">Status:</label>
+            {{ form.status }}
+        </div>
+        <div class="form-group mx-2">
+            <label for="id_delivery_date" class="filter-label">Data livrarii:</label>
+            {{ form.delivery_date }}
+        </div>
+        <button type="submit" class="btn btn-primary mx-2">
+            <i class="fas fa-filter"></i> Filtrează
+        </button>
+        <a href="{% url 'view_transports' %}" class="btn btn-secondary">
+            <i class="fas fa-undo"></i> Resetare
+        </a>
+    </form>
+
+    <!-- Tabel cu transporturi -->
+    <div class="table-responsive">
+        <table class="table table-striped transport-table w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Destinatie</th>
+                    <th>Data si ora livrarii</th>
+                    <th>Ora de ridicare</th>
+                    <th>Status</th>
+                    <th>Numar paleti</th>
+                    <th>Oferta</th>
+                    <th>Nr. Masina</th>
+                    <th>Editare</th>
+                    <th>Transportator Alocat</th>
+                    <th>Actiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in transport_data %}
+                <tr>
+                    <td>{{ data.transport.id }}</td>
+                    <td>{{ data.transport.destination }}</td>
+                    <td>{{ data.transport.delivery_date }}</td>
+                    <td>{{ data.transport.pickup_time }}</td>
+                    <td>
+                        {% if data.transport.is_completed %}
+                            <span class="completed">Transport Finalizat</span>
+                        {% elif data.transport.is_departed %}
+                            <span class="departed">Transport plecat</span>
+                            {% if data.transport.current_location %}
+                                <span> - Locație curentă: {{ data.transport.current_location }}</span>
+                            {% endif %}
+                        {% elif data.transport.is_allocated %}
+                            <span class="allocated">Transport alocat</span>
+                        {% else %}
+                            <span class="pending">În așteptare</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ data.transport.number_of_pallets }}</td>
+                    <td>
+                        {% if user.user_type == 'Client' %}
+                            {% for price in data.prices %}
+                                {{ price.transporter.username }} - {{ price.price }} <br>
+                            {% endfor %}
+                        {% elif user.user_type == 'Transportator' %}
+                            {% if data.prices.exists %}
+                                {{ data.prices.first.price }}
+                            {% else %}
+                                <span>Fara oferta</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>{{ data.transport.nr_masina|default:"Nr. Masina necompletat" }}</td>
+                    <td>
+                        {% if not data.transport.is_departed %}
+                            <a href="{% url 'modify_transport' data.transport.id %}" class="btn btn-primary">
+                                <i class="fas fa-pencil-alt"></i> Editează
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.user_type == 'Client' %}
+                            {% if data.transport.is_allocated %}
+                                <span>{{ data.allocated_transporter.username }}</span>
+                            {% else %}
+                                <form action="{% url 'view_transports' %}" method="POST" class="form-inline">
+                                    {% csrf_token %}
+                                    <select name="selected_transporter" id="transporter_{{ data.transport.id }}" class="form-control mx-2">
+                                        <option value="">Alege un transportator</option>
+                                        {% for price in data.prices %}
+                                            <option value="{{ price.transporter.username }}">{{ price.transporter.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="hidden" name="transport_id" value="{{ data.transport.id }}">
+                                    <button type="submit" class="btn btn-primary" style="margin-top: 25px;margin-left: 75px">
+                                        <i class="fas fa-check"></i> Alege
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% elif user.user_type == 'Transportator' %}
+                            {% if data.transport.is_allocated %}
+                                <span>Da</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.user_type == 'Client' %}
+                            {% if data.transport.is_allocated and not data.transport.is_departed %}
+                                <form action="{% url 'mark_as_departed' data.transport.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fas fa-plane-departure"></i> Marcare ca plecat
+                                    </button>
+                                </form>
+                            {% elif data.transport.is_departed and not data.transport.is_completed %}
+                                <form action="{% url 'request_transport_status' data.transport.id %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fas fa-info-circle"></i> Status Transport
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% elif user.user_type == 'Transportator' %}
+
+                            {% if data.transport.is_departed and data.transport.is_allocated and not data.transport.is_completed %}
+                                <form action="{% url 'update_transport_status' data.transport.id %}" method="GET" style="display:inline;">
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fas fa-sync-alt"></i> Actualizează status
+                                    </button>
+                                </form>
+                                <form action="{% url 'mark_transport_as_completed' data.transport.id %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check-circle"></i> Transport Finalizat
+                                    </button>
+                                </form>
+
+                            {% endif %}
+                            {% if data.transport.is_departed and data.transport.is_allocated %}
+                                <a href="{% url 'upload_transport_file' data.transport.id %}" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> Incarcare Fisiere
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        {% if user.user_type == 'Client' and data.transport.is_completed %}
+                            <a href="{% url 'transport_detail' data.transport.id %}" class="btn btn-primary">
+                                <i class="fas fa-info"></i> Detalii Transport
+                            </a>
+                            <a href="{% url 'transport_history' data.transport.id %}" class="btn btn-secondary">
+                                <i class="fas fa-history"></i> Istoric Transport
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginare -->
+    <div class="pagination">
+        {% if transports.has_previous %}
+            <a href="?page=1&destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}"><<</a>
+            <a href="?page={{ transports.previous_page_number }}&destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}"><</a>
+        {% endif %}
+
+        {% for page in transports.paginator.page_range %}
+            {% if page == transports.number %}
+                <span class="current-page">{{ page }}</span>
+            {% else %}
+                <a href="?page={{ page }}&destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if transports.has_next %}
+            <a href="?page={{ transports.next_page_number }}&destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}">></a>
+            <a href="?page={{ transports.paginator.num_pages }}&destination={{ request.GET.destination }}&status={{ request.GET.status }}&delivery_date={{ request.GET.delivery_date }}">>></a>
+        {% endif %}
+    </div>
+
+{% else %}
+    <div class="alert alert-warning">Trebuie să te autentifici pentru a vedea transporturile.</div>
+{% endif %}
+
+{% endblock %}

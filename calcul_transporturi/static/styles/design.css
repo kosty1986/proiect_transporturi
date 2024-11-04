@@ -1,0 +1,134 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.client-body {
+    background-color: #f0f8ff !important;
+}
+
+.transportator-body {
+    background-color: #fffbea;
+}
+
+header {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.header img {
+    width: 100%;
+    height: auto;
+}
+
+.header img.square {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    margin: 0 auto;
+    display: block;
+}
+
+.button-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+}
+
+.button-container .btn {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
+    font-size: 16px;
+    margin: 0;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+footer {
+    background-color: #111;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+}
+
+input, select {
+    min-width: 150px;
+    height: 40px;
+    padding: 10px;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+table.transport-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table.transport-table th, table.transport-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+table.transport-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table.transport-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+body {
+    background-color: #e1e5ea;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #343a40;
+}
+
+img.a {
+    width: 400px !important;
+    height: auto;
+    margin-bottom: 30px;
+    vertical-align: middle;
+}
+
+a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}

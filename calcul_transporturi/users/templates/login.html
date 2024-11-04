@@ -1,0 +1,23 @@
+{% extends 'base2.html' %}
+
+
+{% block title %}Logare{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 d-flex flex-column align-items-center">
+        <h2>Login</h2>
+        <form method="POST" class="d-flex align-items-center">
+            {% csrf_token %}
+            <div class="mb-3 me-2">
+                <input type="text" name="username" placeholder="Username" required class="form-control" style="height: 40px; width: 200px;">
+            </div>
+            <div class="mb-3 me-2">
+                <input type="password" name="password" placeholder="Password" required class="form-control" style="height: 40px; width: 200px;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="height: 40px;margin-top: -15px;">Logare</button>
+        </form>
+        {% if error %}
+            <p class="text-danger mt-2">{{ error }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

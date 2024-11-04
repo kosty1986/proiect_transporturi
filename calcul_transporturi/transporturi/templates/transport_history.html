@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Istoricul Acțiunilor pentru Transport {{ transport.id }}</h1>
+
+<h2>Acțiuni:</h2>
+<ul>
+    {% for action in actions %}
+        <li>{{ action.timestamp }}: {{ action.action_type }}</li>
+    {% empty %}
+        <li>Nu există acțiuni înregistrate pentru acest transport.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'view_transports' %}">Înapoi la lista de transporturi</a>
+<a href="{% url 'transport_detail' transport.id %}">Înapoi la detalii transport</a>
+{% endblock %}

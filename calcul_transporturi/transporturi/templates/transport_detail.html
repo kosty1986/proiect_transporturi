@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Detalii Transport {{ transport.id }}</h1>
+
+<p><strong>Destinație:</strong> {{ transport.destination }}</p>
+<p><strong>Data livrării:</strong> {{ transport.delivery_date }}</p>
+<p><strong>Ora de preluare:</strong> {% if transport.pickup_time %}{{ transport.pickup_time }}{% else %}N/A{% endif %}</p>
+<p><strong>Tip vehicul:</strong> {% if transport.vehicle_type %}{{ transport.vehicle_type }}{% else %}N/A{% endif %}</p>
+<p><strong>Număr de mașină:</strong> {% if transport.nr_masina %}{{ transport.nr_masina }}{% else %}N/A{% endif %}</p>
+<p><strong>Număr de paleți:</strong> {% if transport.number_of_pallets %}{{ transport.number_of_pallets }}{% else %}N/A{% endif %}</p>
+<p><strong>Transportator alocat:</strong> {% if transport.allocated_transporter %}{{ transport.allocated_transporter.username }}{% else %}N/A{% endif %}</p>
+<p><strong>Status:</strong>
+    {% if transport.is_departed %}
+        <span class="departed">Transport plecat</span>
+    {% elif transport.is_allocated %}
+        <span class="allocated">Transport alocat</span>
+    {% else %}
+        <span class="pending">În așteptare</span>
+    {% endif %}
+</p>
+<p><strong>Ultima locatie:</strong> {% if transport.current_location %}{{ transport.current_location }}{% else %}N/A{% endif %}</p>
+
+{% if transport.uploaded_files.all %}
+    <h2>Fișiere încărcate</h2>
+    <ul>
+        {% for file in transport.uploaded_files.all %}
+            <li>
+                <a href="{{ file.file.url }}">{{ file.file.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p><strong>Fișiere încărcate:</strong> Niciun fișier încărcat.</p>
+{% endif %}
+
+<a href="{% url 'view_transports' %}">Înapoi la lista de transporturi</a>
+<a href="{% url 'transport_history' transport.id %}">Vezi Istoricul Acțiunilor</a>
+
+
+{% endblock %}
+
+
+
+
+
+
+

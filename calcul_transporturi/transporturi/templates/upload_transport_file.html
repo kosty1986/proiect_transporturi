@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Încărcare fișier pentru transportul {{ transport.id }}</h1>
+
+    <!-- Mesaje de feedback -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} mt-2">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Formular de încărcare fișier -->
+    <form action="{% url 'upload_transport_file' transport.id %}" method="POST" enctype="multipart/form-data" class="form-inline mt-4">
+        {% csrf_token %}
+        <div class="form-group mx-2">
+            <label for="file_upload">Încarcă fișier:</label>
+            <input type="file" name="file_upload" id="file_upload" class="form-control mx-2" required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Încarcă
+        </button>
+    </form>
+
+    <!-- Afișează fișierele deja încărcate -->
+    {% if transport.uploaded_files.exists %}
+        <h2 class="mt-4">Fișierele încărcate anterior</h2>
+        <ul>
+            {% for file in transport.uploaded_files.all %}
+                <li>
+                    <a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p><strong>Fișiere încărcate:</strong> Niciun fișier încărcat.</p>
+    {% endif %}
+
+    <!-- Buton de întoarcere la lista de transporturi -->
+    <a href="{% url 'view_transports' %}" class="btn btn-secondary mt-3">
+        Înapoi la lista de transporturi
+    </a>
+</div>
+{% endblock %}

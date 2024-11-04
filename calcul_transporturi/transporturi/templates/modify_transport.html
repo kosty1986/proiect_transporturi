@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-center">Editează Transportul</h1>
+<form method="post" class="form-horizontal d-flex flex-column align-items-center">
+    {% csrf_token %}
+
+    {% if user == transport.client %}
+
+        <div class="form-group w-25">
+            <label for="destination">Destinație:</label>
+            <input type="text" id="destination" name="destination" value="{{ transport.destination }}" required class="form-control form-control-sm">
+        </div>
+
+        <div class="form-group w-25">
+            <label for="delivery_date">Data și ora livrării:</label>
+            <input type="datetime-local" id="delivery_date" name="delivery_date" value="{{ transport.delivery_date|date:'Y-m-d\TH:i' }}" required class="form-control form-control-sm">
+        </div>
+
+        <div class="form-group w-25">
+            <label for="vehicle_type">Tip vehicul:</label>
+            <select id="vehicle_type" name="vehicle_type" required class="form-control form-control-sm">
+                {% for vehicle in vehicle_types %}
+                    <option value="{{ vehicle.id }}" {% if vehicle.id == transport.vehicle_type.id %}selected{% endif %}>{{ vehicle.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="full_vehicle">Vehicul complet:</label>
+            <input type="checkbox" id="full_vehicle" name="full_vehicle" value="true" {% if transport.full_vehicle %}checked{% endif %} class="form-check-input">
+        </div>
+
+        <div id="pallets_input" class="form-group w-25" style="display: {% if transport.full_vehicle %}none{% else %}block{% endif %};">
+            <label for="number_of_pallets">Număr de paleți:</label>
+            <input type="number" id="number_of_pallets" name="number_of_pallets" value="{{ transport.number_of_pallets }}" min="1" class="form-control form-control-sm">
+        </div>
+
+    {% elif user in transport.transporters.all %}
+
+        {% if not transport.is_allocated %}
+            <div class="form-group w-25">
+                <label for="price">Oferta:</label>
+                <input type="number" id="price" name="price" value="{% for price in transport.prices.all %}{% if price.transporter == user %}{{ price.price }}{% endif %}{% endfor %}" required step="0.01" class="form-control form-control-sm">
+            </div>
+        {% endif %}
+
+        {% if transport.is_allocated %}
+            <div class="form-group w-25">
+                <label for="pickup_time">Ora de ridicare:</label>
+                <input type="datetime-local" id="pickup_time" name="pickup_time" value="{{ transport.pickup_time|date:'Y-m-d\TH:i' }}" class="form-control form-control-sm">
+            </div>
+            <div class="form-group w-25">
+                <label for="nr_masina">Nr. Mașina:</label>
+                <input type="text" id="nr_masina" name="nr_masina" value="{{ transport.nr_masina }}" required class="form-control form-control-sm">
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary my-2">
+        <i class="fas fa-save"></i> Salvează modificările
+    </button>
+    <a href="{% url 'view_transports' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Înapoi la transporturi
+    </a>
+</form>
+
+<script>
+    document.getElementById('full_vehicle').addEventListener('change', function() {
+        var palletsInput = document.getElementById('pallets_input');
+        if (this.checked) {
+            palletsInput.style.display = 'none';
+            document.getElementById('number_of_pallets').value = '';
+        } else {
+            palletsInput.style.display = 'block';
+        }
+    });
+
+    // Inițializare pentru a seta vizibilitatea câmpului de paleți bazat pe checkbox
+    document.getElementById('full_vehicle').dispatchEvent(new Event('change'));
+</script>
+
+{% endblock %}

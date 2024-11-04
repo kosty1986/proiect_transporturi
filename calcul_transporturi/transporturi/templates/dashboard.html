@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Bun venit, {{ user.username }}!</h1>
+<p>Alege o opțiune:</p>
+
+<a href="{% url 'profile' %}"><button>Editare Profil</button></a>
+<a href="{% url 'view_transports' %}"><button>Vizualizare Transporturi</button></a>
+
+{% if user.is_staff %}
+    <a href="{% url 'admin:index' %}"><button>Admin Transporturi</button></a>
+    <a href="{% url 'user_list' %}"><button>Aprobare Utilizatori</button></a>
+{% endif %}
+
+{% endblock %}

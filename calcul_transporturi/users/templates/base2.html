@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}  <!-- Asigură-te că ai această linie pentru a folosi tag-ul static -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pagina Principală{% endblock %}</title>
+
+    <!-- Include Bootstrap din CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include fișierul de stiluri design.css -->
+    <link rel="stylesheet" href="{% static 'styles/design.css' %}">
+</head>
+<body>
+    <header>
+        <h1 class="text-center">Bun venit!</h1>
+        <img src="{% static 'images/image.jpeg' %}" alt="Image" class="img-fluid mx-auto d-block" style="max-width: 500px;">
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p class="text-center">&copy; 2024 KOSTY. Toate drepturile rezervate.</p>
+    </footer>
+
+    <!-- Adăugăm Bootstrap JS și jQuery din CDN pentru funcționalități avansate -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

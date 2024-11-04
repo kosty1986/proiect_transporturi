@@ -1,0 +1,36 @@
+{% extends 'base2.html' %}
+
+{% block title %}Profil {% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2 class="text-center">Profil Utilizator</h2>
+        <form method="POST" class="mt-4">
+            {% csrf_token %}
+            {{ form.non_field_errors }}  <!-- Afișează erorile generale, dacă există -->
+
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {% if field.name == "password" %}
+                        <div class="d-flex justify-content-center">
+                            <input type="password" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" style="height: 40px; width: 200px;" placeholder="Introduceți o nouă parolă" />
+                        </div>
+                    {% else %}
+                        {{ field }}  <!-- Afișează câmpul fără a modifica clasa -->
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Salvează</button>
+        </form>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,11 @@
+{% extends 'base2.html' %}
+
+{% block title %}Bun Venit{% endblock %}
+
+{% block content %}
+    <p class="text-center mt-4">
+        <a href="{% url 'register' %}" class="btn btn-primary">Înregistrează-te</a>
+        sau
+        <a href="{% url 'login' %}" class="btn btn-secondary">Loghează-te</a>
+    </p>
+{% endblock %}

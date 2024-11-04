@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Actualizare Status Transport</h1>
+
+<form action="{% url 'update_transport_status' transport.id %}" method="POST">
+    {% csrf_token %}
+    <label for="current_location">Locație actuală:</label>
+    <input type="text" id="current_location" name="current_location" required>
+
+    <button type="submit" class="btn btn-primary">Actualizează</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Utilizatori</title>
+</head>
+<body>
+    <h1>Lista Utilizatori</h1>
+    <form method="POST" action="{% url 'approve_user' %}">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Aprobat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <input type="checkbox" name="user_ids" value="{{ user.id }}" {% if user.is_approved %}checked{% endif %}>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Aprobă/Dezaprobat</button>
+    </form>
+</body>
+</html>

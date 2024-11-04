@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pagina Mea{% endblock %}</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include design.css (CSS personalizat) -->
+    <link rel="stylesheet" href="{% static 'styles/design.css' %}">
+
+    <!-- Include Favicon -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+</head>
+<body class="{% if user.is_authenticated %}{% if user.user_type == 'Client' %}client-body{% elif user.user_type == 'Transportator' %}transportator-body{% endif %}{% endif %}">
+
+    <header class="mb-4">
+        <div class="header">
+            {% if user.is_authenticated %}
+                {% if user.user_type == 'Client' %}
+                    <img src="{% static 'images/image3.jpeg' %}" alt="Imagine Client" class="img-fluid" style="height: 250px; width: 2200px; object-fit: fill;">
+                {% elif user.user_type == 'Transportator' %}
+                    <img src="{% static 'images/image4.jpg' %}" alt="Imagine Transportator" class="img-fluid" style="height: 250px; width: 2200px; object-fit: fill;">
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="button-container d-flex justify-content-between align-items-center">
+            <a href="{% url 'welcome' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Acasă
+            </a>
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" style="margin-right: -55px;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="text-center py-4">
+        <p>&copy; 2024 KOSTY. Toate drepturile rezervate.</p>
+    </footer>
+
+    <!-- Include jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
